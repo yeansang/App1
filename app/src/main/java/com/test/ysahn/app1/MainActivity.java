@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
                 // set item width
                 deleteItem.setWidth((int)dp2px(90));
+                deleteItem.setIcon(R.drawable.ic_trash);
                 // set a icon
                 //deleteItem.setIcon(R.drawable.ic_delete);
                 // add to menu
