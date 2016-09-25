@@ -84,17 +84,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void create(SwipeMenu menu) {
-                // create "delete" item
-                SwipeMenuItem deleteItem = new SwipeMenuItem(
-                        getApplicationContext());
-                // set item background
+                SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
                 deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
-                // set item width
                 deleteItem.setWidth((int)dp2px(90));
                 deleteItem.setIcon(R.drawable.ic_trash);
-                // set a icon
-                //deleteItem.setIcon(R.drawable.ic_delete);
-                // add to menu
                 menu.addMenuItem(deleteItem);
             }
         };
