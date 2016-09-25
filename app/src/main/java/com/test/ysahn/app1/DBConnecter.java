@@ -51,7 +51,7 @@ public class DBConnecter extends SQLiteOpenHelper {
         Vector<String> out = new Vector<String>();
 
         if(cursor.isAfterLast()){
-            return null;
+            return out;
         }
 
         while(cursor.moveToNext()){
