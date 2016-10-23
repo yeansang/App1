@@ -1,14 +1,17 @@
 package com.test.ysahn.app1;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -28,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
-    SwipeMenuListView mListView;
+    ListView mListView;
     EditText mEditText;
     Button mButton;
     DBConnecter dbConnecter;
@@ -49,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         setTitle("Memo");
         setContentView(R.layout.activity_main);
 
-        mListView = (SwipeMenuListView) findViewById(R.id.listView);
+        mListView = (ListView) findViewById(R.id.listView);
         mEditText = (EditText)findViewById(R.id.editText);
         mButton = (Button)findViewById(R.id.button);
 
@@ -75,39 +78,52 @@ public class MainActivity extends AppCompatActivity {
         mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mListView.smoothCloseMenu();
+                    PopupMenu pop = new PopupMenu(MainActivity.this, view);
+                    getMenuInflater().inflate(R.menu.menu_listview,pop.getMenu());
+
+                    final int index = i;
+
+                    //팝업메뉴 리스너 설정
+                    pop.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            if(item.getItemId() == R.id.delete){
+                                String temp = mListAdapter.getItem(index);
+                                dbConnecter.remove(index);
+                                refresh();
+                                Toast.makeText(getApplicationContext(),temp+" is removed",Toast.LENGTH_SHORT).show();
+                            }
+                            return false;
+                        }
+                    });
+                    pop.show();
                 return true;
             }
         });
 
-        SwipeMenuCreator creator = new SwipeMenuCreator() {
+        mListView.setAdapter(mListAdapter);
+    }
 
-            @Override
-            public void create(SwipeMenu menu) {
-                SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
-                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
-                deleteItem.setWidth((int)dp2px(90));
-                deleteItem.setIcon(R.drawable.ic_trash);
-                menu.addMenuItem(deleteItem);
-            }
-        };
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
 
-        mListView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(int i, SwipeMenu menu, int index) {
-                if(index==0){
-                    String temp = mListAdapter.getItem(i);
-                    dbConnecter.remove(i);
+        if(resultCode == RESULT_OK){
+            int result = data.getIntExtra("result",0);
+            int num = data.getIntExtra("listnum",0);
+            Log.d("test",result+"/"+num);
+            switch (result){
+                case 0:
+                    break;
+                case 1:
+                    String temp = mListAdapter.getItem(num);
+                    dbConnecter.remove(num);
                     refresh();
                     Toast.makeText(getApplicationContext(),temp+" is removed",Toast.LENGTH_SHORT).show();
-                }
-                return false;
+                    break;
             }
-        });
+        }
 
-        mListView.setMenuCreator(creator);
-
-        mListView.setAdapter(mListAdapter);
     }
 
     public float dp2px(float dipValue) {
